@@ -7,7 +7,7 @@ import * as schema from "./schema";
 // ---------------------------------------------------------------------------
 
 const DEFAULT_DATABASE_URL =
-  "postgresql://jstore_app:JStoreApp2026!Pass@db.wekxnzbfhwabexrnmwon.supabase.co:5432/postgres?sslmode=require";
+  "postgresql://jstore_app.wekxnzbfhwabexrnmwon:JStoreApp2026!Pass@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require";
 
 let sqlClient: ReturnType<typeof postgres> | null = null;
 

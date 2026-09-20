@@ -30,7 +30,8 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!username.trim()) {
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername) {
       setError("Masukkan username terlebih dahulu");
       return;
     }
@@ -38,6 +39,8 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
       setError("Masukkan password terlebih dahulu");
       return;
     }
+
+    const effectiveRole = trimmedUsername.toLowerCase() === "owner" ? "owner" : role;
 
     setBusy(true);
     setError("");
@@ -47,8 +50,8 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          role,
-          username: username.trim(),
+          role: effectiveRole,
+          username: trimmedUsername,
           password: password.trim(),
         }),
       });

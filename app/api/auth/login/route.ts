@@ -31,8 +31,8 @@ export async function POST(request: Request) {
     }
 
     const { username, password, role } = parsed.data;
-    const targetRole = role || (username.toLowerCase() === "owner" ? "owner" : "admin");
     const u = username.toLowerCase();
+    const targetRole = u === "owner" ? "owner" : (role || "admin");
 
     let authenticatedUser: AuthUser | null = null;
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       const db = getInventoryDb();
       await ensureDbSchema(db);
       const dbUser = await db
-        .prepare('SELECT "id", "username", "name", "password", "role" FROM "appUsers" WHERE "username" = $1')
+        .prepare('SELECT "id", "username", "name", "password", "role" FROM "appUsers" WHERE LOWER("username") = $1')
         .bind(u)
         .first<{ id: string; username: string; name: string; password: string; role: "owner" | "admin" }>();
 
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
           authenticatedUser = {
             id: dbUser.id,
             name: dbUser.name,
-            role: dbUser.username === "owner" ? "owner" : dbUser.role,
+            role: (u === "owner" || dbUser.username.toLowerCase() === "owner" || dbUser.role === "owner") ? "owner" : "admin",
           };
         }
       }

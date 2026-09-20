@@ -366,6 +366,7 @@ export default function StockWorkspace() {
         <LoginView
           onLoginSuccess={user=>{
             try{localStorage.setItem("jstore-view-mode","live");}catch{}
+            setLive(prev => ({ ...prev, viewer: user }));
             setDemoState(false);
             setNeedsLogin(false);
             setLoading(true);
