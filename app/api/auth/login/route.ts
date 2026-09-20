@@ -49,7 +49,7 @@ export async function POST(request: Request) {
           authenticatedUser = {
             id: dbUser.id,
             name: dbUser.name,
-            role: dbUser.role,
+            role: dbUser.username === "owner" ? "owner" : dbUser.role,
           };
         }
       }
