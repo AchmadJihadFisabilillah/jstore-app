@@ -185,7 +185,7 @@ export default function StockWorkspace() {
         const p=d.products.find(p=>p.id===payload.productId);
         if(!p)throw new Error("Produk tidak ditemukan.");
         if(payload.expiresAt && String(payload.expiresAt)<today())throw new Error("Tanggal kedaluwarsa sudah lewat.");
-        const all=payload.lines as string[], lines=[...new Set(all)].filter(v=>!d.stocks.some(s=>s.productId===p.id&&s.value===v));
+        const all=payload.lines as string[], lines=all;
         if(!all.length||all.length>500)throw new Error("Masukkan 1–500 baris stok.");
         d.stocks.unshift(...lines.map(v=>({id:generateUUID(),productId:p.id,value:v,cost:Number(payload.cost??p.cost),expiresAt:payload.expiresAt as string|null,state:"ready",saleId:null,createdAt:now})));
         if(lines.length)activity("restock",`${productName(p)} · ${viewer.name||"Owner"}`,lines.length);out={inserted:lines.length,duplicates:all.length-lines.length};

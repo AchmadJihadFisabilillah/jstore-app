@@ -249,7 +249,7 @@ export async function ensureDbSchema(_db?: unknown) {
         "batchId" TEXT NOT NULL,
         "createdAt" TEXT NOT NULL
       );
-      CREATE UNIQUE INDEX IF NOT EXISTS idx_stocks_product_value ON stocks ("productId", "value");
+      DROP INDEX IF EXISTS idx_stocks_product_value;
       CREATE INDEX IF NOT EXISTS idx_stocks_product_state ON stocks ("productId", "state");
       CREATE INDEX IF NOT EXISTS idx_stocks_saleId ON stocks ("saleId");
 

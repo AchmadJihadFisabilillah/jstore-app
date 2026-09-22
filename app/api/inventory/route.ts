@@ -87,13 +87,13 @@ export async function POST(request:Request) {
         );
         if (p.initialStock && p.initialStock.length > 0) {
           const batch = crypto.randomUUID();
-          const uniqueLines = [...new Set(p.initialStock)];
-          for (const line of uniqueLines) {
+          const lines = p.initialStock;
+          for (const line of lines) {
             statements.push(
-              db.prepare('INSERT INTO stocks ("id","productId","value","cost","expiresAt","state","batchId","createdAt") VALUES ($1,$2,$3,$4,NULL,\'ready\',$5,$6) ON CONFLICT DO NOTHING').bind(crypto.randomUUID(), pid, line, p.cost, batch, now)
+              db.prepare('INSERT INTO stocks ("id","productId","value","cost","expiresAt","state","batchId","createdAt") VALUES ($1,$2,$3,$4,NULL,\'ready\',$5,$6)').bind(crypto.randomUUID(), pid, line, p.cost, batch, now)
             );
           }
-          totalStockInserted += uniqueLines.length;
+          totalStockInserted += lines.length;
         }
       }
       statements.push(
@@ -106,8 +106,8 @@ export async function POST(request:Request) {
       const p=await db.prepare('SELECT * FROM products WHERE "id"=$1').bind(data.productId).first<Product>();
       if(!p)return json({error:"Produk tidak ditemukan."},404);
       if(data.expiresAt&&data.expiresAt<today())return json({error:"Tanggal kedaluwarsa sudah lewat."},400);
-      const batch=crypto.randomUUID(),lines=[...new Set(data.lines)];
-      const inserts=lines.map(line=>db.prepare('INSERT INTO stocks ("id","productId","value","cost","expiresAt","state","batchId","createdAt") VALUES ($1,$2,$3,$4,$5,\'ready\',$6,$7) ON CONFLICT DO NOTHING').bind(crypto.randomUUID(),p.id,line,data.cost??p.cost,data.expiresAt??null,batch,now));
+      const batch=crypto.randomUUID(),lines=data.lines;
+      const inserts=lines.map(line=>db.prepare('INSERT INTO stocks ("id","productId","value","cost","expiresAt","state","batchId","createdAt") VALUES ($1,$2,$3,$4,$5,\'ready\',$6,$7)').bind(crypto.randomUUID(),p.id,line,data.cost??p.cost,data.expiresAt??null,batch,now));
       // Count inserted stocks after batch
       const activityStmt = db.prepare('INSERT INTO activities ("id","kind","message","quantity","createdAt") SELECT $1,\'restock\',$2,COUNT(*),$3 FROM stocks WHERE "batchId"=$4 HAVING COUNT(*)>0').bind(crypto.randomUUID(),`${p.name} · ${p.duration} · ${operator.name}${data.reference?` · ${data.reference}`:""}`,now,batch);
       const results=await db.batch([...inserts,activityStmt]);

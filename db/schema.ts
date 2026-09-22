@@ -47,7 +47,6 @@ export const stocks = pgTable("stocks", {
   batchId: text("batchId").notNull(),
   createdAt: text("createdAt").notNull(),
 }, (table) => [
-  uniqueIndex("idx_stocks_product_value").on(table.productId, table.value),
   index("idx_stocks_product_state").on(table.productId, table.state),
   index("idx_stocks_saleId").on(table.saleId),
 ]);

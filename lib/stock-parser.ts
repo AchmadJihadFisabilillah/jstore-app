@@ -23,9 +23,9 @@ function supplierLines(input:string,type:string,mode:"auto"|"lines"){
 }
 /** Unknown or incomplete credentials are shown for review, never imported as an account. */
 export function parseStockInput(input:string,type:string,mode:"auto"|"lines"="auto"):StockImport{
-  const out:StockImport={values:[],duplicates:0,ignored:[],issues:[]},seen=new Set<string>();
+  const out:StockImport={values:[],duplicates:0,ignored:[],issues:[]};
   let pending:{value:string;line:number}|null=null;
-  const add=(value:string)=>{if(seen.has(value))out.duplicates++;else{seen.add(value);out.values.push(value);}};
+  const add=(value:string)=>{out.values.push(value);};
   const incomplete=()=>{if(pending){out.issues.push({...pending,reason:"Akun ini belum memiliki password."});pending=null;}};
   for(const {raw,line} of supplierLines(input,type,mode)){
     let value=raw.trim();if(!value)continue;
